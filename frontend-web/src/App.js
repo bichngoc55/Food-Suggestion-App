@@ -21,40 +21,44 @@ const App = () => {
     "bot",
   ];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {  // Thêm tham số e
+  e.preventDefault();  // Ngăn chặn hành vi mặc định của form
+  
+  if (!ingredients.trim()) {
+    setError("Vui lòng nhập ít nhất một nguyên liệu!");
+    return;
+  }
 
-    if (!ingredients.trim()) {
-      setError("Vui lòng nhập ít nhất một nguyên liệu!");
-      return;
+  setLoading(true);
+  setError("");
+  setSuggestions([]);
+
+  try {
+    const ingredientList = ingredients.split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter((item) => item.length > 0);
+    
+    console.log("Gửi nguyên liệu:", ingredientList); // Debug log
+    
+    const response = await axios.post("http://localhost:3000/suggest", { 
+      ingredients: ingredientList 
+    });
+    
+    console.log("Nhận phản hồi:", response.data); // Debug log
+    
+    const uniqueSuggestions = [...new Set(response.data.suggestions)];
+    setSuggestions(uniqueSuggestions);
+
+    if (uniqueSuggestions.length === 0) {
+      setError("Không tìm thấy món ăn phù hợp với nguyên liệu này");
     }
-
-    setLoading(true);
-    setError("");
-    setSuggestions([]);
-
-    try {
-      const ingredientList = ingredients
-        .split(",")
-        .map((item) => item.trim().toLowerCase())
-        .filter((item) => item.length > 0);
-
-      const response = await axios.post("http://localhost:3000/suggest", {
-        ingredients: ingredientList,
-      });
-      console.log("Response:", response.data);
-      setSuggestions(response.data.suggestions || []);
-
-      if (response.data.suggestions.length === 0) {
-        setError("Không tìm thấy món ăn phù hợp với nguyên liệu này");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      setError(err.response?.data?.error || "Không thể kết nối với server");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    console.error("Lỗi API:", err); // Debug log
+    setError(err.response?.data?.error || "Không thể kết nối với server");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const addIngredient = (ingredient) => {
     const currentValue = ingredients.trim();
