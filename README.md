@@ -43,7 +43,7 @@
         <h2>4. Yêu Cầu Kỹ Thuật</h2>
         <p><strong>Frontend:</strong></p>
         <ul>
-            <li>Web: HTML, CSS, JavaScript (React tùy chọn).</li>
+            <li>Web: React + React Native.</li>
             <li>Mobile: React Native (tùy chọn).</li>
         </ul>
         <p><strong>Backend:</strong></p>
